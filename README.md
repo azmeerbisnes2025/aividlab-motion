@@ -61,7 +61,13 @@ See `examples/` for full specs.
 - `MOTION_PYTHON` — python binary with faster-whisper
 - `MOTION_CONCURRENCY` — render threads
 
-## Hermes / agent skill
+## AI agents (Hermes, Claude Code, Codex, OpenClaw, Gemini CLI, OpenCode, Cursor…)
+Read [`AGENTS.md`](AGENTS.md). Any agent that can run a terminal works — just tell it:
+> *install https://github.com/azmeerbisnes2025/aividlab-motion and follow its AGENTS.md*
+
+The installer also drops a skill into `~/.hermes`, `~/.claude/skills`, `~/.codex/skills`, `~/.openclaw/skills` when present.
+
+## Hermes skill file
 `skill/SKILL.md` — copy to `~/.hermes/skills/creative/aividlab-motion/SKILL.md`.
 
 ## License

@@ -114,6 +114,8 @@ SK_TARGETS=""
 for prof in "$HOME"/.hermes/profiles/*/; do [ -d "$prof" ] && SK_TARGETS="$SK_TARGETS ${prof%/}/skills/creative"; done
 [ -d "$HOME/.claude" ] && SK_TARGETS="$SK_TARGETS $HOME/.claude/skills"
 [ -d "$HOME/.openclaw" ] && SK_TARGETS="$SK_TARGETS $HOME/.openclaw/skills"
+[ -d "$HOME/.codex" ] && SK_TARGETS="$SK_TARGETS $HOME/.codex/skills"
+[ -d "$HOME/.agents" ] && SK_TARGETS="$SK_TARGETS $HOME/.agents/skills"
 for d in $SK_TARGETS; do
   mkdir -p "$d/aividlab-motion"
   sed "s#~/aividlab-motion#$DIR#g" skill/SKILL.md > "$d/aividlab-motion/SKILL.md"
