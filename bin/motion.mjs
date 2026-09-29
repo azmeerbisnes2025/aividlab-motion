@@ -165,6 +165,20 @@ async function main() {
     return;
   }
   if (cmd === "schema") return console.log(cheatSheet());
+  if (cmd === "doctor") {
+    const chk = (name, ok, hint) => console.log(`${ok ? "✅" : "❌"} ${name}${ok ? "" : `  →  ${hint}`}`);
+    const run = (c, a) => spawnSync(c, a, { encoding: "utf8" });
+    const nodeMaj = Number(process.versions.node.split(".")[0]);
+    chk(`Node ${process.versions.node}`, nodeMaj >= 18, "perlu Node 18+ — jalankan semula install.sh");
+    chk("ffmpeg", run("ffmpeg", ["-version"]).status === 0, "pasang ffmpeg (apt install ffmpeg / brew install ffmpeg)");
+    chk("node_modules", fs.existsSync(path.join(ROOT, "node_modules/remotion")), `cd ${ROOT} && npm install`);
+    const chrome = fs.existsSync(path.join(ROOT, "node_modules/.remotion"));
+    chk("headless Chrome", chrome, `cd ${ROOT} && npx remotion browser ensure`);
+    const py = process.env.MOTION_PYTHON || "python3";
+    chk(`faster-whisper (${py}) — untuk UGC caption`, run(py, ["-c", "import faster_whisper"]).status === 0, "pip install faster-whisper  (atau jalankan semula install.sh)");
+    console.log(`CPU: ${os.cpus().length} core, RAM: ${(os.totalmem() / 2 ** 30).toFixed(1)} GB ${os.totalmem() < 4 * 2 ** 30 ? "(⚠️ < 4GB, guna --draft)" : ""}`);
+    return;
+  }
   const input = argv[1];
   if (!input) throw new Error("missing input file");
   const overrides = {};

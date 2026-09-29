@@ -17,7 +17,14 @@ Any LLM (Claude, GPT, DeepSeek, Qwen, GLM, Kimi…) writes a **short JSON spec**
 - Music / voiceover tracks, watermark, progress bar
 - `sheet` command → contact sheet PNG so an agent can visually QA before full render
 
-## Install
+## Install (1 command)
+```bash
+curl -fsSL https://raw.githubusercontent.com/azmeerbisnes2025/aividlab-motion/main/install.sh | bash
+motion doctor
+```
+🇲🇾 **Panduan Bahasa Melayu:** [docs/PANDUAN-BM.md](docs/PANDUAN-BM.md) · **Prompt AI siap:** [docs/PROMPT-AI.md](docs/PROMPT-AI.md)
+
+### Manual
 ```bash
 git clone https://github.com/azmeerbisnes2025/aividlab-motion && cd aividlab-motion
 npm install
