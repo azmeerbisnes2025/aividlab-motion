@@ -13,7 +13,7 @@ metadata:
 # aividlab-motion
 
 ## Overview
-Repo: `/root/aividlab-motion` (GitHub `azmeerbisnes2025/aividlab-motion`). Remotion engine with LOCKED design. You never write animation code. You write a JSON spec and run the CLI. The normaliser auto-fixes wrong type names, durations, and over-long text, and prints each fix as `[motion] fix: ...`.
+Repo: `~/aividlab-motion` (GitHub `azmeerbisnes2025/aividlab-motion`), CLI `motion` (in `~/.local/bin`). If `motion` is missing, install: `curl -fsSL https://raw.githubusercontent.com/azmeerbisnes2025/aividlab-motion/main/install.sh | bash`. Remotion engine with LOCKED design. You never write animation code. You write a JSON spec and run the CLI. The normaliser auto-fixes wrong type names, durations, and over-long text, and prints each fix as `[motion] fix: ...`.
 
 ## When to Use
 - "buat video motion graphic / promo / iklan / explainer"
@@ -21,15 +21,15 @@ Repo: `/root/aividlab-motion` (GitHub `azmeerbisnes2025/aividlab-motion`). Remot
 - Don't use for: generating real footage (use video gen models), then pass that footage as a `ugc`/`image` scene.
 
 ## Workflow
-1. `cd /root/aividlab-motion && export PATH=/root/.hermes/node/bin:$PATH`
-2. `node bin/motion.mjs schema` → read the allowed fields.
-3. Write spec to `out/<name>.json`. Local file paths (absolute or relative to the spec) are auto-staged.
-4. `node bin/motion.mjs validate out/<name>.json` → fix anything listed in warnings you don't like.
-5. `node bin/motion.mjs sheet out/<name>.json -o out/<name>-sheet.png` → vision-check one frame per scene.
-6. Render: `node bin/motion.mjs render out/<name>.json -o out/<name>.mp4` (run with background=true + notify_on_complete; about 1-3 min per 30 s at 1080p on 4 vCPU). `--draft` gives half-res preview.
-7. Deliver with `MEDIA:/root/aividlab-motion/out/<name>.mp4`.
+1. `export PATH=$HOME/.local/bin:$PATH && motion doctor` (all ✅ except whisper is fine for pure motion).
+2. `motion schema` → read the allowed fields.
+3. Write spec to `~/aividlab-motion/out/<name>.json`. Local file paths (absolute or relative to the spec) are auto-staged.
+4. `motion validate out/<name>.json` → fix anything listed in warnings you don't like.
+5. `motion sheet out/<name>.json -o out/<name>-sheet.png` → vision-check one frame per scene.
+6. Render: `motion render out/<name>.json -o out/<name>.mp4` (run with background=true + notify_on_complete; about 1-3 min per 30 s at 1080p on 4 vCPU). `--draft` gives half-res preview.
+7. Deliver with `MEDIA:<absolute path to mp4>`.
 
-One-shot UGC: `node bin/motion.mjs ugc clip.mp4 --headline "Hook" --sticker "HOT" --cta "Cuba sekarang" --lang ms -o out/x.mp4`
+One-shot UGC: `motion ugc clip.mp4 --headline "Hook" --sticker "HOT" --cta "Cuba sekarang" --lang ms -o out/x.mp4`
 
 ## Spec craft (what makes it look pro)
 - 6-10 scenes for 20-35 s. Start with `hook` (≤ 6 words + `highlight`), end with `cta`.
@@ -40,7 +40,7 @@ One-shot UGC: `node bin/motion.mjs ugc clip.mp4 --headline "Hook" --sticker "HOT
 - Themes: aividlab (lime/violet dark, default brand), midnight (tech), sunset (F&B/fashion), luxe (premium gold serif), candy (beauty, light), mono (editorial).
 
 ## Common Pitfalls
-1. Missing `PATH=/root/.hermes/node/bin` → `node: not found`.
+1. `motion: command not found` → `export PATH=$HOME/.local/bin:$PATH` (or re-run installer).
 2. Foreground render can be interrupted → always use background + notify.
 3. Whisper `small` takes about 40 s per 10 s clip on CPU. Use `MOTION_WHISPER=base` for speed.
 4. Chart values with decimals are shown as given; keep ≤ 6 bars.

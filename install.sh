@@ -109,13 +109,15 @@ case ":$PATH:" in *":$BIN:"*) ;; *)
 esac
 
 # ---------- AI agent skills ----------
-for d in "$HOME/.hermes/skills/creative" "$HOME/.claude/skills" "$HOME/.openclaw/skills"; do
-  parent="$(dirname "$d")"
-  if [ -d "$parent" ]; then
-    mkdir -p "$d/aividlab-motion"
-    sed "s#/root/aividlab-motion#$DIR#g; s#export PATH=/root/.hermes/node/bin:\$PATH#true#g" skill/SKILL.md > "$d/aividlab-motion/SKILL.md"
-    say "Skill AI agent dipasang: $d/aividlab-motion"
-  fi
+SK_TARGETS=""
+[ -d "$HOME/.hermes" ] && SK_TARGETS="$SK_TARGETS $HOME/.hermes/skills/creative"
+for prof in "$HOME"/.hermes/profiles/*/; do [ -d "$prof" ] && SK_TARGETS="$SK_TARGETS ${prof%/}/skills/creative"; done
+[ -d "$HOME/.claude" ] && SK_TARGETS="$SK_TARGETS $HOME/.claude/skills"
+[ -d "$HOME/.openclaw" ] && SK_TARGETS="$SK_TARGETS $HOME/.openclaw/skills"
+for d in $SK_TARGETS; do
+  mkdir -p "$d/aividlab-motion"
+  sed "s#~/aividlab-motion#$DIR#g" skill/SKILL.md > "$d/aividlab-motion/SKILL.md"
+  say "Skill AI agent dipasang: $d/aividlab-motion"
 done
 
 # ---------- smoke test ----------
