@@ -4,6 +4,10 @@
 # Env: MOTION_DIR (default ~/aividlab-motion), MOTION_NO_WHISPER=1 to skip UGC captions deps
 set -euo pipefail
 
+# Whole script lives in main() so `curl | bash` reads it fully before running
+# (apt/npm would otherwise swallow the rest of the piped script from stdin).
+main() {
+
 REPO="https://github.com/azmeerbisnes2025/aividlab-motion.git"
 DIR="${MOTION_DIR:-$HOME/aividlab-motion}"
 NODE_VER="22.12.0"
@@ -22,12 +26,12 @@ printf "\n${G}aividlab-motion${N} — motion graphic + UGC auto-edit  (aividlab.
 if [ "$OS" = "Linux" ]; then
   if have apt-get; then
     say "Pasang pakej sistem (git, ffmpeg, python3, lib Chrome)…"
-    $SUDO apt-get update -qq || true
-    $SUDO apt-get install -y -qq git curl ffmpeg python3 python3-venv ca-certificates \
+    $SUDO apt-get update -qq </dev/null || true
+    $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git curl ffmpeg python3 python3-venv ca-certificates \
       libnss3 libdbus-1-3 libatk1.0-0 libgbm1 libasound2 libxrandr2 libxkbcommon0 libxfixes3 \
       libxcomposite1 libxdamage1 libatk-bridge2.0-0 libpango-1.0-0 libcairo2 libcups2 fonts-noto-color-emoji \
-      >/dev/null 2>&1 || \
-    $SUDO apt-get install -y -qq git curl ffmpeg python3 python3-venv libnss3 libgbm1 libasound2t64 >/dev/null 2>&1 || \
+      </dev/null >/dev/null 2>&1 || \
+    $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git curl ffmpeg python3 python3-venv libnss3 libgbm1 libasound2t64 </dev/null >/dev/null 2>&1 || \
       warn "Sebahagian pakej gagal dipasang — teruskan juga"
   elif have dnf; then
     $SUDO dnf install -y -q git curl ffmpeg python3 nss atk at-spi2-atk libgbm alsa-lib libxkbcommon >/dev/null 2>&1 || warn "dnf: sebahagian pakej gagal"
@@ -132,3 +136,6 @@ ${G}Siap!${N} Buka terminal baru, kemudian cuba:
 
 Panduan penuh: $DIR/docs/PANDUAN-BM.md
 EOF
+}
+
+main "$@" </dev/null
