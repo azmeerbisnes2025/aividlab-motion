@@ -130,8 +130,10 @@ async function render(spec, out, { still = false, frame = 30, draft = false } = 
       },
     });
   }
-  log(`done -> ${out} (${comp.width}x${comp.height}, ${(comp.durationInFrames / comp.fps).toFixed(1)}s)`);
-  console.log(JSON.stringify({ ok: true, output: path.resolve(out), width: comp.width, height: comp.height, seconds: +(comp.durationInFrames / comp.fps).toFixed(2) }));
+  const k = draft && !still ? 0.5 : 1;
+  const W = Math.round(comp.width * k), H = Math.round(comp.height * k);
+  log(`done -> ${out} (${W}x${H}${draft ? " draft" : ""}, ${(comp.durationInFrames / comp.fps).toFixed(1)}s)`);
+  console.log(JSON.stringify({ ok: true, output: path.resolve(out), width: W, height: H, draft: !!draft, seconds: +(comp.durationInFrames / comp.fps).toFixed(2) }));
 }
 
 function cheatSheet() {
