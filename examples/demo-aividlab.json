@@ -1,0 +1,18 @@
+{
+  "title": "AIVidLab promo",
+  "ratio": "9:16",
+  "theme": "aividlab",
+  "transition": "slide",
+  "scenes": [
+    { "type": "hook", "emoji": "🤯", "headline": "Video iklan siap dalam 60 saat", "highlight": "60 saat", "sub": "Tanpa editor. Tanpa kamera." },
+    { "type": "kinetic", "lines": ["Tulis idea", "AI buat skrip", "Render terus MP4"], "highlight": "MP4" },
+    { "type": "stat", "value": "12,000+", "label": "Video dijana", "sub": "oleh usahawan Malaysia" },
+    { "type": "bullets", "headline": "Semua dalam satu app", "items": ["Video AI (Veo, Kling, Seedance)", "Gambar produk Seedream", "Motion graphic auto", "Caption auto BM"] },
+    { "type": "compare", "headline": "Beza dia?", "left": { "label": "Cara lama", "items": ["Upah editor RM300", "Tunggu 3 hari"] }, "right": { "label": "AIVidLab", "items": ["Siap 60 saat", "Mula RM1"] } },
+    { "type": "quote", "quote": "Dulu 3 hari nak siap satu video. Sekarang sehari boleh buat 10 video iklan.", "author": "Aina", "role": "Peniaga tudung, Shah Alam", "rating": 5 },
+    { "type": "chart", "headline": "CTR iklan naik", "data": [{ "label": "Gambar", "value": 1.2 }, { "label": "Video biasa", "value": 2.1 }, { "label": "AIVidLab", "value": 4.8 }], "suffix": "%" },
+    { "type": "price", "headline": "Promo pelancaran", "oldPrice": "RM99", "price": "RM49", "badge": "JIMAT 50%", "sub": "Untuk 100 pelanggan pertama" },
+    { "type": "logo", "src": "aividlab-logo.png", "headline": "AIVidLab", "sub": "Studio video AI anda" },
+    { "type": "cta", "headline": "Cuba percuma hari ni", "button": "Daftar Sekarang", "url": "aividlab.shop" }
+  ]
+}

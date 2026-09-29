@@ -1,0 +1,7 @@
+node_modules/
+out/
+.cache/
+*.mp4
+!examples/*.mp4
+.env
+public/_run/

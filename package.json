@@ -1,0 +1,32 @@
+{
+  "name": "aividlab-motion",
+  "version": "1.0.0",
+  "description": "AI-agent-proof motion graphics + UGC auto-edit engine by aividlab.shop. Any LLM writes a short JSON spec, the engine renders studio-grade MP4.",
+  "type": "module",
+  "bin": {
+    "motion": "bin/motion.mjs"
+  },
+  "scripts": {
+    "studio": "remotion studio src/index.tsx",
+    "render": "node bin/motion.mjs render",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "author": "aividlab.shop",
+  "dependencies": {
+    "@remotion/bundler": "^4.0.530",
+    "@remotion/cli": "^4.0.530",
+    "@remotion/google-fonts": "^4.0.530",
+    "@remotion/renderer": "^4.0.530",
+    "@remotion/transitions": "^4.0.530",
+    "@remotion/zod-types": "^4.0.530",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.530",
+    "zod": "^3.22.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

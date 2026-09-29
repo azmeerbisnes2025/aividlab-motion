@@ -1,0 +1,23 @@
+{
+  "title": "UGC + motion graphic combo",
+  "ratio": "9:16",
+  "theme": "aividlab",
+  "transition": "zoom",
+  "scenes": [
+    { "type": "hook", "emoji": "😩", "headline": "Prompt asyik tak menjadi?", "highlight": "tak menjadi", "duration": 1.8 },
+    {
+      "type": "ugc",
+      "src": "/tmp/c36_video.mp4",
+      "captions": "pop",
+      "language": "ms",
+      "overlays": [
+        { "type": "progress" },
+        { "type": "sticker", "text": "AI Brain", "emoji": "🧠", "at": 0.3, "duration": 2.2, "position": "top-left" },
+        { "type": "headline", "text": "Idea → Video terus", "at": 2.4, "duration": 2.5 },
+        { "type": "cta", "text": "Komen NAK", "at": 5.6, "duration": 2 }
+      ]
+    },
+    { "type": "stat", "value": "60", "suffix": " saat", "label": "Masa purata", "sub": "dari idea ke video siap", "duration": 2.5 },
+    { "type": "cta", "headline": "Cuba AIVidLab hari ni", "button": "Daftar Percuma", "url": "aividlab.shop" }
+  ]
+}
