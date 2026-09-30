@@ -52,6 +52,25 @@ Letak scene ke-2 sebagai:
  "overlays":[{"type":"sticker","text":"...","at":0.5},{"type":"cta","text":"...","at":6}]}
 ```
 
+### Untuk video explainer (anda bercakap + grafik pop atas anda)
+1. Jalankan `motion transcript video-saya.mp4 --lang ms` → salin hasil (masa + ayat).
+2. Tampal ke AI bersama ayat ni:
+```
+Ini transkrip video aku (masa dalam saat). Tulis SATU spec JSON aividlab-motion:
+satu scene {"type":"ugc","src":"video-saya.mp4","captions":"boxed","captionPosition":"bottom","language":"ms","overlays":[...]}
+Setiap 2-3 saat letak SATU overlay ikut apa aku cakap masa tu. Jenis overlay:
+  glitch   {text:"1 PERKATAAN", sub?}                 - pembuka / kata kunci besar
+  emphasis {text:"baris putih", highlight:"baris berkotak"}
+  number   {value:"1", text:"poin", sub?}             - bila sebut poin 1/2/3
+  cards    {text:"tajuk", images:["a.png","b.png","c.png"]}
+  flow     {text:"tajuk", items:["Hook","Proof","USP"]}  - langkah / proses
+  focus    {src:"produk.png", text, sub?}             - tunjuk produk
+  screen   {src:"screenshot.png", text}               - tunjuk app / website
+  split    {src:"demo.mp4 atau gambar.png", text}      - contoh hasil atas, aku bawah
+Setiap overlay ada "at" (saat dari transkrip) dan "duration" (1.5-3). Teks pendek, max 4 perkataan.
+Balas JSON sahaja.
+```
+
 ### Tips
 - AI bagi teks panjang? Tak apa, engine potong & betulkan sendiri.
 - Tak puas hati? Balas AI: *"buat lebih punchy, tukar theme sunset"*.

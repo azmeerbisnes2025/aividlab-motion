@@ -18,7 +18,11 @@ export const CAPTION_STYLES = ["pop", "karaoke", "boxed", "minimal"];
 // Built-in SFX (public/sfx, synthesized by py/make_sfx.py — no external assets).
 export const SFX_NAMES = ["whoosh", "ding", "pop", "rumble"];
 // Scene types that get a sound by default when `sfx` is not set. `false` opts out.
-export const SFX_DEFAULTS = { hook: "rumble", stat: "ding", price: "ding", steps: "pop", cta: "whoosh" };
+export const SFX_DEFAULTS = { hook: "rumble", stat: "ding", price: "ding", steps: "pop", cta: "whoosh",
+  // overlays on UGC clips (key "ov:<type>")
+  "ov:glitch": "rumble", "ov:emphasis": "pop", "ov:number": "pop", "ov:cards": "whoosh", "ov:flow": "pop",
+  "ov:focus": "ding", "ov:screen": "whoosh", "ov:split": "whoosh", "ov:sticker": "pop", "ov:stat": "ding" };
+const OVERLAY_SFX = Object.fromEntries(Object.entries(SFX_DEFAULTS).filter(([k]) => k.startsWith("ov:")).map(([k, v]) => [k.slice(3), v]));
 
 // scene type -> { aliases, defaults(duration s), textLimits }
 export const SCENE_TYPES = {
@@ -46,6 +50,15 @@ const OVERLAY_TYPES = {
   broll: ["image", "cutaway", "photo"],
   headline: ["title", "text", "hook", "callout"],
   progress: ["progressbar", "bar"],
+  // explainer-style (v2)
+  glitch: ["glitchtext", "title_glitch", "bigword", "rgb"],
+  emphasis: ["highlightbox", "punchline", "keyword", "twoline", "boxed"],
+  number: ["numberpoint", "point", "numbered", "badge_number", "step"],
+  cards: ["gallery", "images", "photos", "cardrow", "polaroid"],
+  flow: ["arrows", "pipeline", "storyboard", "chain", "diagram"],
+  focus: ["productfocus", "spotlight", "frame", "brackets"],
+  screen: ["phone", "mockup", "phonemockup", "screenshot", "app", "ui", "appscreen"],
+  split: ["splitscreen", "split_screen", "tophalf", "demo"],
 };
 
 const LIMITS = { headline: 60, line: 42, sub: 90, item: 48, quote: 180 };
@@ -60,10 +73,12 @@ function normSfx(s, type, p, warn) {
   else if (typeof v === "string") name = v;
   else name = v?.name ?? v?.src;
   if (!name) return undefined;
+  name = String(name).replace(/^sfx\/(\w+)\.mp3$/i, "$1"); // idempotent on re-normalise
   const built = SFX_NAMES.includes(name.toLowerCase());
+  const vol = Number(typeof v === "object" ? v.volume ?? 1 : 1);
   return {
     src: built ? `sfx/${name.toLowerCase()}.mp3` : name,
-    volume: Math.min(1, Math.max(0, Number(typeof v === "object" ? v.volume : 1) || 1)),
+    volume: Math.min(1, Math.max(0, isFinite(vol) ? vol : 1)),
     at: Math.max(0, Number(typeof v === "object" ? v.at ?? v.delay : 0) || 0),
     duck: !(typeof v === "object" && v.duck === false),
     ...(built ? {} : { custom: true }),
@@ -74,6 +89,8 @@ const canon = (s) => String(s ?? "").toLowerCase().replace(/[\s-]/g, "");
 
 function resolveType(raw, table) {
   const c = canon(raw);
+  // exact type name beats any alias (e.g. overlay "number" vs stat's alias "number")
+  for (const k of Object.keys(table)) if (canon(k) === c) return k;
   for (const [k, v] of Object.entries(table)) {
     const aliases = Array.isArray(v) ? v : v.aliases;
     if (canon(k) === c || aliases.map(canon).includes(c)) return k;
@@ -253,6 +270,22 @@ function normScene(s, i, warn) {
       o.volume = s.volume == null ? 1 : Math.max(0, Math.min(2, Number(s.volume)));
       o.language = s.language;
       o.overlays = arr(s.overlays).map((ov, j) => normOverlay(ov, `${p}.overlays[${j}]`, warn)).filter(Boolean);
+      // Once the cut length is known, squeeze overlays that fall past the clip back inside it
+      // (weak models guess `at` from the raw clip; auto-cut makes it shorter).
+      if (s.segments) {
+        const L = s.segments.reduce((a, g) => a + (g.to - g.from), 0);
+        const ovs = o.overlays.filter((ov) => ov.type !== "progress").sort((a, b) => a.at - b.at);
+        const last = ovs.length ? ovs[ovs.length - 1].at : 0;
+        if (ovs.length && last > L - 0.8) {
+          const k = Math.max(0.1, (L - 1.0) / Math.max(last, 0.01));
+          warn(`${p}: overlays run to ${last}s but the cut clip is ${L.toFixed(1)}s — timeline squeezed x${k.toFixed(2)} (fewer overlays or a second ugc scene looks better)`);
+          ovs.forEach((ov) => (ov.at = +(ov.at * k).toFixed(2)));
+        }
+        ovs.forEach((ov, j) => {
+          const next = ovs[j + 1]?.at ?? L;
+          ov.duration = +Math.max(0.6, Math.min(ov.duration, next - ov.at, L - ov.at)).toFixed(2);
+        });
+      }
       // filled by the CLI pre-pass:
       o.words = s.words;
       o.segments = s.segments;
@@ -285,6 +318,12 @@ function normOverlay(ov, p, warn) {
     src: ov.src ?? ov.image,
     position: ["top", "center", "bottom", "top-left", "top-right"].includes(ov.position) ? ov.position : undefined,
     emoji: ov.emoji,
+    highlight: clip(ov.highlight ?? ov.line2 ?? ov.box, 40, `${p}.highlight`, warn),
+    items: t === "flow" ? textList(ov.items ?? ov.steps ?? ov.boxes, 5, 16, `${p}.items`, warn) : undefined,
+    images: t === "cards" ? arr(ov.images ?? ov.srcs ?? ov.src).slice(0, 3).map(String) : undefined,
+    play: ov.play,
+    blur: ov.blur,
+    ...(ov.sfx !== undefined || OVERLAY_SFX[t] ? { sfx: normSfx({ sfx: ov.sfx }, `ov:${t}`, p, warn) } : {}),
   };
 }
 

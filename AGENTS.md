@@ -26,6 +26,8 @@ motion ugc clip.mp4 --headline "Stop scroll!" --sticker "PROMO" --cta "Beli seka
 ```
 Or put `{"type":"ugc","src":"clip.mp4","captions":"pop","overlays":[...]}` inside a spec to mix with motion scenes.
 
+**Explainer / tutorial edit** (presenter talking + motion graphics popping over them — the viral "cikgu" reel style): use the overlay types `glitch, emphasis, number, cards, flow, focus, screen, split` (fields in `motion schema`, full example `examples/explainer-ugc.json`). One overlay every ~2 s, match each to what the speaker is saying (read the transcript: `motion render` prints it; or run `--draft` first). The engine blurs the presenter behind big overlays, hides captions while text overlays show, and plays a matching SFX.
+
 ## Craft rules
 - The user's requested length/content always wins. Default when unspecified: 6–10 scenes, 20–35 s. First `hook` (≤6 words + `highlight`), last `cta`.
 - Short text: headline ≤ 8 words, list items ≤ 6 words, `kinetic` lines ≤ 4 words.

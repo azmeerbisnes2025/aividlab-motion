@@ -1,0 +1,105 @@
+{
+  "title": "Explainer UGC — presenter + motion overlays. Replace clip.mp4 and the images with your own.",
+  "ratio": "9:16",
+  "theme": "midnight",
+  "transition": "zoom",
+  "scenes": [
+    {
+      "type": "ugc",
+      "src": "clip.mp4",
+      "captions": "boxed",
+      "captionPosition": "bottom",
+      "language": "ms",
+      "overlays": [
+        {
+          "type": "glitch",
+          "text": "IKLAN",
+          "sub": "cara lama vs cara baru",
+          "at": 0,
+          "duration": 1.5
+        },
+        {
+          "type": "emphasis",
+          "text": "Production",
+          "highlight": "yang besar",
+          "at": 1.6,
+          "duration": 1.6
+        },
+        {
+          "type": "number",
+          "value": "1",
+          "text": "Satu gambar",
+          "sub": "Contoh: gambar produk",
+          "at": 3.3,
+          "duration": 1.6
+        },
+        {
+          "type": "split",
+          "src": "aividlab-logo.png",
+          "text": "Contoh hasil AI",
+          "at": 5.0,
+          "duration": 1.7
+        },
+        {
+          "type": "flow",
+          "text": "Contoh storyboard",
+          "items": [
+            "Hook",
+            "Proof",
+            "USP"
+          ],
+          "at": 6.8,
+          "duration": 1.6
+        },
+        {
+          "type": "cards",
+          "text": "Paling penting",
+          "images": [
+            "aividlab-logo.png",
+            "aividlab-logo.png",
+            "aividlab-logo.png"
+          ],
+          "at": 8.5,
+          "duration": 1.8
+        }
+      ]
+    },
+    {
+      "type": "ugc",
+      "src": "clip.mp4",
+      "captions": "boxed",
+      "captionPosition": "bottom",
+      "language": "ms",
+      "overlays": [
+        {
+          "type": "focus",
+          "src": "aividlab-logo.png",
+          "text": "Produk anda",
+          "sub": "AI buat selebihnya",
+          "at": 0.2,
+          "duration": 2
+        },
+        {
+          "type": "screen",
+          "src": "aividlab-logo.png",
+          "text": "Terus dalam app",
+          "at": 2.4,
+          "duration": 2.4
+        },
+        {
+          "type": "emphasis",
+          "text": "Siap dalam",
+          "highlight": "60 saat",
+          "at": 5,
+          "duration": 1.8
+        },
+        {
+          "type": "cta",
+          "text": "Cuba sekarang",
+          "at": 7,
+          "duration": 2
+        }
+      ]
+    }
+  ]
+}

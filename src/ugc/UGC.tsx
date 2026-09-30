@@ -1,7 +1,11 @@
 import React from "react";
-import { AbsoluteFill, OffthreadVideo, Sequence, interpolate, spring, useCurrentFrame, useVideoConfig, Img } from "remotion";
+import { AbsoluteFill, Audio, OffthreadVideo, Sequence, interpolate, spring, useCurrentFrame, useVideoConfig, Img } from "remotion";
 import { useLayout, useTheme, Pill, EASE } from "../lib/kit";
 import { asset } from "../scenes";
+import { Cards, Emphasis, Flow, Focus, Glitch, NumberPoint, Screen, SplitTop } from "./fx";
+
+// Overlays that take over the frame: the presenter behind them is blurred + dimmed.
+const BLUR_TYPES = ["glitch", "cards", "flow", "focus", "screen"];
 
 type Word = { w: string; s: number; e: number };
 type Seg = { from: number; to: number };
@@ -162,6 +166,22 @@ const Overlay: React.FC<{ o: S }> = ({ o }) => {
           {o.text && <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: 24 * u, background: "linear-gradient(transparent, rgba(0,0,0,.8))", color: "#fff", fontFamily: t.display, fontWeight: 800, fontSize: 44 * u }}>{o.text}</div>}
         </div>
       );
+    case "glitch":
+      return <Glitch o={o} />;
+    case "emphasis":
+      return <Emphasis o={o} />;
+    case "number":
+      return <NumberPoint o={o} />;
+    case "cards":
+      return <Cards o={o} />;
+    case "flow":
+      return <Flow o={o} />;
+    case "focus":
+      return <Focus o={o} />;
+    case "screen":
+      return <Screen o={o} />;
+    case "split":
+      return <SplitTop o={o} />;
     case "progress":
       return null; // handled globally
   }
@@ -180,9 +200,24 @@ export const UGC: React.FC<{ s: S }> = ({ s }) => {
   const outAR = width / height;
   const mismatch = Math.abs(srcAR - outAR) > 0.15;
 
+  // Which "take-over" overlays are on screen now? -> blur / split the presenter (ramped, never pops)
+  const now = frame / fps;
+  const ramp = (o: S) => Math.min(1, Math.max(0, Math.min((now - o.at) / 0.25, (o.at + o.duration - now) / 0.25)));
+  const overlays = (s.overlays as S[]) ?? [];
+  const blurK = overlays.filter((o) => BLUR_TYPES.includes(o.type) && o.blur !== false).reduce((m, o) => Math.max(m, ramp(o)), 0);
+  const splitK = overlays.filter((o) => o.type === "split").reduce((m, o) => Math.max(m, ramp(o)), 0);
+  // captions step aside while a text-heavy overlay owns the screen
+  const capsOff = overlays.filter((o) => [...BLUR_TYPES, "emphasis", "number"].includes(o.type)).reduce((m, o) => Math.max(m, ramp(o)), 0);
+  const presenter: React.CSSProperties = {
+    filter: blurK > 0 ? `blur(${blurK * 28 * u}px) brightness(${1 - blurK * 0.45})` : undefined,
+    transform: splitK > 0 ? `translateY(${splitK * height * 0.25}px)` : undefined,
+    clipPath: splitK > 0 ? `inset(${splitK * 25}% 0 0 0)` : undefined,
+  };
+
   let acc = 0;
   return (
     <AbsoluteFill style={{ background: "#000" }}>
+      <AbsoluteFill style={presenter}>
       {segs.map((g, i) => {
         const from = Math.round(acc * fps);
         const len = Math.max(1, Math.round((g.to - g.from) * fps));
@@ -195,13 +230,23 @@ export const UGC: React.FC<{ s: S }> = ({ s }) => {
           </Sequence>
         );
       })}
+      </AbsoluteFill>
       <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(0,0,0,.25) 0%, transparent 20%, transparent 70%, rgba(0,0,0,.35) 100%)" }} />
       {(s.overlays as S[]).filter((o) => o.type !== "progress").map((o, i) => (
         <Sequence key={`o${i}`} from={Math.round(o.at * fps)} durationInFrames={Math.max(1, Math.round(o.duration * fps))} layout="none">
           <AbsoluteFill><Overlay o={o} /></AbsoluteFill>
+          {o.sfx?.src && (
+            <Sequence from={Math.round((o.sfx.at ?? 0) * fps)} durationInFrames={Math.round(1.6 * fps)} layout="none">
+              <Audio src={asset(o.sfx.src)} volume={o.sfx.volume ?? 1} />
+            </Sequence>
+          )}
         </Sequence>
       ))}
-      {s.captions !== "off" && words.length > 0 && <Captions words={words} style={s.captions} position={s.captionPosition} />}
+      {s.captions !== "off" && words.length > 0 && capsOff < 0.99 && (
+        <AbsoluteFill style={{ opacity: 1 - capsOff }}>
+          <Captions words={words} style={s.captions} position={splitK > 0.5 && s.captionPosition === "top" ? "bottom" : s.captionPosition} />
+        </AbsoluteFill>
+      )}
       {(s.overlays as S[]).some((o) => o.type === "progress") && (
         <div style={{ position: "absolute", left: 0, top: 0, height: 10 * u, width: `${(frame / Math.max(1, acc * fps)) * 100}%`, background: t.accent }} />
       )}

@@ -56,6 +56,7 @@ function stageAssets(spec, baseDir) {
     if (o && typeof o === "object")
       for (const k of Object.keys(o)) {
         if (["src", "avatar"].includes(k) && typeof o[k] === "string") o[k] = stage(o[k]);
+        else if (k === "images" && Array.isArray(o[k])) o[k] = o[k].map((x) => (typeof x === "string" ? stage(x) : x));
         else if (k === "sfx" && o[k] && typeof o[k].src === "string" && !o[k].src.startsWith("sfx/")) {
           o[k].src = stage(o[k].src);
           walk(o[k]);
@@ -161,6 +162,18 @@ scene types: ${Object.keys(SCENE_TYPES).join(", ")}
             autoCut?: true, autoZoom?: true, language?: "ms", overlays?: [
               {type: headline|sticker|lowerThird|stat|cta|broll|progress, at: sec, duration?: sec, text?, sub?, value?, src?, emoji?, position?}]}
 
+explainer overlays for ugc (talking-head tutorial style; presenter auto-blurs behind the big ones):
+  glitch   {text:"IKLAN", sub?}                      huge RGB-split word, presenter blurred
+  emphasis {text:"Production", highlight:"yang besar"} white line + colour-boxed line
+  number   {value:"1", text:"Satu gambar", sub?}      numbered point badge
+  cards    {text?:"Paling penting", images:["a.png","b.png","c.png"], sub?}   1-3 framed photos/clips
+  flow     {text?:"Storyboard", items:["Hook","Proof","USP"]}                  boxes joined by arrows (<=5)
+  focus    {src:"product.png", text?, sub?}           product in white card + corner brackets
+  screen   {src:"screenshot.png", text?}              phone mockup (tall screenshot auto-scrolls)
+  split    {src:"demo.mp4"|"img.png", text?}          media on top half, presenter pushed to bottom half
+  all take position?: top|center|bottom, sfx? (defaults: glitch rumble, cards/screen/split whoosh, focus ding, others pop)
+  Timing: 1 overlay every 1.5-2.5 s. Overlays past the auto-cut clip length are squeezed in (warning) — for long lists split into 2 ugc scenes.
+
 sound effects (sfx): every scene may add a sound, layered on top of the music.
   built-in sounds  : ${SFX_NAMES.join(" | ")}
   built-in defaults: hook->rumble, stat->ding, price->ding, steps->pop, cta->whoosh (any other scene type is silent unless you set sfx)
@@ -237,6 +250,27 @@ async function main() {
     const r = spawnSync("ffmpeg", ["-y", "-loglevel", "error", "-framerate", "1", "-i", path.join(tmp, "%02d.png"), "-vf", `tile=${cols}x${rows}:padding=8:color=white`, "-frames:v", "1", out]);
     if (r.status !== 0) throw new Error(String(r.stderr));
     console.log(JSON.stringify({ ok: true, output: path.resolve(out), scenes: files.length }));
+    return;
+  }
+  if (cmd === "transcript") {
+    // Words on the CUT timeline (what overlay `at` means), grouped into ~2 s lines so an LLM can time overlays.
+    const clip = path.resolve(input);
+    const spec = prepare({ scenes: [{ type: "ugc", src: clip, language: flag("lang") }] });
+    const s = spec.scenes[0];
+    let acc = 0;
+    const words = [];
+    for (const g of s.segments) {
+      for (const w of s.words || []) if (w.s >= g.from - 0.05 && w.e <= g.to + 0.05) words.push({ w: w.w, t: +(acc + Math.max(0, w.s - g.from)).toFixed(2) });
+      acc += g.to - g.from;
+    }
+    const lines = [];
+    for (const w of words) {
+      const cur = lines[lines.length - 1];
+      if (!cur || w.t - cur.at >= 2) lines.push({ at: w.t, text: w.w });
+      else cur.text += ` ${w.w}`;
+    }
+    console.log(`# cut clip length ${acc.toFixed(1)}s — use these times for overlay "at"`);
+    lines.forEach((l) => console.log(`${l.at.toFixed(1).padStart(5)}s  ${l.text}`));
     return;
   }
   if (cmd === "ugc") {
