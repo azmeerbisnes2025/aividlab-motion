@@ -34,6 +34,9 @@ PERATURAN:
   logo     {src?, headline, sub?}
   cta      {headline, button, url?}
 - "highlight" = perkataan dalam headline yang nak diwarnakan.
+- Bunyi efek (sfx) ada dalam engine: `whoosh | ding | pop | rumble`.
+  Scene `hook`, `stat`, `price`, `steps`, `cta` dapat bunyi automatik. Scene lain: tambah `"sfx": "pop"`.
+  Nak senyapkan scene yang dah automatik: `"sfx": false`. Terperinci: `{"sfx": {"name": "ding", "volume": 0.8, "at": 0.3}}`.
 
 Format:
 {"ratio":"9:16","theme":"...","transition":"slide","scenes":[ ... ]}

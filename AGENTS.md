@@ -33,6 +33,9 @@ Or put `{"type":"ugc","src":"clip.mp4","captions":"pop","overlays":[...]}` insid
 - For `ugc` scenes don't set duration; overlay `at` is seconds on the cut timeline.
 - Local image/video paths may be absolute or relative to the spec file. `-o` is relative to your current directory — prefer absolute paths.
 - A small `aividlab.shop` watermark is ON by default. For the user's own brand: `"watermarkText": "mybrand.my"`, or `"watermark": false` to remove.
+- Background music is ON by default (built-in instrumental, auto-lowered while a UGC clip speaks). Own track: `"music": "song.mp3"`; silent: `"music": false`.
+- Sound effects: built-in `whoosh | ding | pop | rumble` (in `public/sfx/`). `hook→rumble, stat→ding, price→ding, steps→pop, cta→whoosh` play automatically; any scene can set `"sfx": "pop"`, `"sfx": false` to opt out, or `"sfx": {"name":"ding","volume":0.8,"at":0.3}`. The BGM dips under each SFX so it punches through.
+- Never invent URLs, domains, prices or phone numbers the user didn't give. No URL given → omit `url` and keep the default watermark.
 
 ## Don't
 - Don't edit `src/` to "improve" design unless the user asks — the locked design is the point.

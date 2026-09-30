@@ -15,6 +15,7 @@ Any LLM (Claude, GPT, DeepSeek, Qwen, GLM, Kimi…) writes a **short JSON spec**
 - **Ratios**: `9:16 1:1 4:5 16:9` — every layout adapts
 - **Transitions**: `slide fade wipe zoom none`
 - Music / voiceover tracks, watermark, progress bar
+- **Sound effects**: built-in `whoosh | ding | pop | rumble`; `hook→rumble, stat→ding, price→ding, steps→pop, cta→whoosh` auto-play, any scene can override (`"sfx": "pop"`, or `"sfx": false`), BGM auto-ducks under each hit
 - `sheet` command → contact sheet PNG so an agent can visually QA before full render
 
 ## Install (1 command)

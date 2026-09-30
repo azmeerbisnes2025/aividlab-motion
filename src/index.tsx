@@ -4,6 +4,7 @@ import { TransitionSeries, linearTiming, springTiming } from "@remotion/transiti
 import { fade } from "@remotion/transitions/fade";
 import { slide } from "@remotion/transitions/slide";
 import { wipe } from "@remotion/transitions/wipe";
+import { Sequence } from "remotion";
 import { getTheme } from "./lib/theme";
 import { ThemeCtx, useLayout, useTheme } from "./lib/kit";
 import * as Sc from "./scenes";
@@ -72,6 +73,28 @@ export const Motion: React.FC<{ spec: any }> = ({ spec: raw }) => {
   const theme = getTheme(spec.theme);
   const fps = spec.fps;
   const trF = Math.round(spec.transitionDuration * fps);
+  // Frame ranges where someone speaks (ugc scenes) or an SFX hits -> duck the BGM.
+  const { speech, sfxRanges } = React.useMemo(() => {
+    const speech: [number, number][] = [];
+    const sfxRanges: [number, number][] = [];
+    let at = 0;
+    spec.scenes.forEach((s: any, i: number) => {
+      const d = Math.max(1, Math.round(s.duration * fps));
+      if (i > 0 && (s.transition ?? spec.transition) !== "none") at -= trF;
+      if (s.type === "ugc") speech.push([at, at + d]);
+      if (s.sfx) sfxRanges.push([at + Math.round(s.sfx.at * fps), at + Math.round(s.sfx.at * fps) + Math.min(d, Math.round(1.2 * fps))]);
+      at += d;
+    });
+    return { speech, sfxRanges };
+  }, [spec, fps, trF]);
+  const musicVol = (f: number) => {
+    const base = Number(spec.music?.volume ?? 0.35) * (spec.voiceover?.src ? 0.45 : 1);
+    const fadeIn = Math.min(1, f / 15);
+    // 10-frame ramps so ducking never clicks; SFX gets a light dip, speech a deep one
+    const dip = (ranges: [number, number][], floor: number) =>
+      ranges.reduce((m, [a, b]) => Math.min(m, f < a - 10 || f > b + 10 ? 1 : f < a ? 1 - ((1 - floor) * (f - (a - 10))) / 10 : f > b ? floor + ((1 - floor) * (f - b)) / 10 : floor), 1);
+    return fadeIn * base * Math.min(dip(speech, 0.18), dip(sfxRanges, 0.55));
+  };
   return (
     <ThemeCtx.Provider value={theme}>
       <AbsoluteFill style={{ background: theme.bg }}>
@@ -92,12 +115,17 @@ export const Motion: React.FC<{ spec: any }> = ({ spec: raw }) => {
             els.push(
               <TransitionSeries.Sequence key={`s${i}`} durationInFrames={Math.max(1, Math.round(s.duration * fps))}>
                 <C s={s} />
+                {s.sfx && (
+                  <Sequence from={Math.round(s.sfx.at * fps)} durationInFrames={Math.max(1, Math.round(1.6 * fps))}>
+                    <Audio src={Sc.asset(s.sfx.src)} volume={s.sfx.volume} />
+                  </Sequence>
+                )}
               </TransitionSeries.Sequence>,
             );
             return els;
           })}
         </TransitionSeries>
-        {spec.music?.src && <Audio src={Sc.asset(spec.music.src)} volume={(f: number) => Math.min(1, f / 15) * Number(spec.music.volume)} loop />}
+        {spec.music?.src && <Audio src={Sc.asset(spec.music.src)} volume={musicVol} loop />}
         {spec.voiceover?.src && <Audio src={Sc.asset(spec.voiceover.src)} volume={spec.voiceover.volume} />}
         {spec.progressBar && <Progress />}
         {spec.watermark && <Watermark text={spec.watermarkText} />}

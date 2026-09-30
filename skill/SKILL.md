@@ -45,6 +45,9 @@ One-shot UGC: `motion ugc clip.mp4 --headline "Hook" --sticker "HOT" --cta "Cuba
 3. Whisper `small` takes about 40 s per 10 s clip on CPU. Use `MOTION_WHISPER=base` for speed.
 4. Chart values with decimals are shown as given; keep ≤ 6 bars.
 5. Images: product scene looks best with transparent PNG (cut-out).
+6. Video is never silent: built-in BGM plays by default and ducks under UGC speech. `"music": "x.mp3"` to replace, `"music": false` for silence.
+7. SFX: built-in `whoosh | ding | pop | rumble`; `hook→rumble, stat→ding, price→ding, steps→pop, cta→whoosh` auto-play. Override per scene `"sfx": "pop"` or `"sfx": false`; advanced `{"sfx":{"name":"ding","volume":0.8,"at":0.3}}`.
+8. Never invent URLs/domains/prices the user didn't give — no URL → omit `url`, keep default watermark.
 
 ## Verification Checklist
 - [ ] `validate` shows no unexpected warnings

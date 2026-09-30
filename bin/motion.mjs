@@ -10,7 +10,7 @@ import path from "node:path";
 import os from "node:os";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { normalizeSpec, totalFrames, SCENE_TYPES, THEME_LIST, RATIOS, CAPTION_STYLES } from "../src/spec/normalize.js";
+import { normalizeSpec, totalFrames, SCENE_TYPES, THEME_LIST, RATIOS, CAPTION_STYLES, SFX_NAMES } from "../src/spec/normalize.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC = path.join(ROOT, "public");
@@ -56,7 +56,10 @@ function stageAssets(spec, baseDir) {
     if (o && typeof o === "object")
       for (const k of Object.keys(o)) {
         if (["src", "avatar"].includes(k) && typeof o[k] === "string") o[k] = stage(o[k]);
-        else walk(o[k]);
+        else if (k === "sfx" && o[k] && typeof o[k].src === "string" && !o[k].src.startsWith("sfx/")) {
+          o[k].src = stage(o[k].src);
+          walk(o[k]);
+        } else walk(o[k]);
       }
   };
   walk(spec);
@@ -139,7 +142,7 @@ async function render(spec, out, { still = false, frame = 30, draft = false } = 
 function cheatSheet() {
   return `aividlab-motion spec (JSON). Only pick from these; the engine owns all design.
 top: { ratio: ${Object.keys(RATIOS).join("|")}, theme: ${THEME_LIST.join("|")}, transition: fade|slide|wipe|zoom|none,
-       music?: "file.mp3", voiceover?: "vo.mp3", watermark?: true, progressBar?: false, scenes: [...] }
+       music?: "file.mp3" (default built-in BGM, auto-ducked under UGC speech; false = silent), voiceover?: "vo.mp3", watermark?: true, progressBar?: false, scenes: [...] }
 scene types: ${Object.keys(SCENE_TYPES).join(", ")}
   hook     {headline, sub?, emoji?, highlight?}
   kinetic  {lines:[2-5 short lines], highlight?}
@@ -157,6 +160,15 @@ scene types: ${Object.keys(SCENE_TYPES).join(", ")}
   ugc      {src:"clip.mp4", captions?: ${CAPTION_STYLES.join("|")}|off, captionPosition?: middle|bottom|top,
             autoCut?: true, autoZoom?: true, language?: "ms", overlays?: [
               {type: headline|sticker|lowerThird|stat|cta|broll|progress, at: sec, duration?: sec, text?, sub?, value?, src?, emoji?, position?}]}
+
+sound effects (sfx): every scene may add a sound, layered on top of the music.
+  built-in sounds  : ${SFX_NAMES.join(" | ")}
+  built-in defaults: hook->rumble, stat->ding, price->ding, steps->pop, cta->whoosh (any other scene type is silent unless you set sfx)
+  per scene        : {"type":"hook", "sfx":"ding"} | {"type":"image", "sfx":"pop"} | "sfx": false to silence a defaulting scene
+  advanced         : {"sfx": {"name": "ding", "volume": 0.8, "at": 0.3, "duck": false}}
+                     "at" = seconds after the scene starts; "duck": false keeps the music loud
+  your own file    : {"sfx": "my-hit.mp3"} (path relative to the spec, like images)
+
 every scene: duration? (seconds, auto if omitted), transition?
 Keep text SHORT: headline <= 8 words, bullet <= 6 words.`;
 }

@@ -12,7 +12,13 @@ export const RATIOS = {
 
 export const THEME_LIST = ["aividlab", "midnight", "sunset", "luxe", "candy", "mono"];
 export const TRANSITIONS = ["fade", "slide", "wipe", "zoom", "none"];
+export const DEFAULT_MUSIC = "bgm/default.mp3"; // public/bgm — instrumental, generated for aividlab (Mureka BGM)
 export const CAPTION_STYLES = ["pop", "karaoke", "boxed", "minimal"];
+
+// Built-in SFX (public/sfx, synthesized by py/make_sfx.py — no external assets).
+export const SFX_NAMES = ["whoosh", "ding", "pop", "rumble"];
+// Scene types that get a sound by default when `sfx` is not set. `false` opts out.
+export const SFX_DEFAULTS = { hook: "rumble", stat: "ding", price: "ding", steps: "pop", cta: "whoosh" };
 
 // scene type -> { aliases, defaults(duration s), textLimits }
 export const SCENE_TYPES = {
@@ -43,6 +49,26 @@ const OVERLAY_TYPES = {
 };
 
 const LIMITS = { headline: 60, line: 42, sub: 90, item: 48, quote: 180 };
+
+// `sfx` may be: false | "name" | { name, volume, at } | undefined (scene-type default).
+// Built-ins resolve to staticFile path; "name.mp3" or other strings pass through as assets.
+function normSfx(s, type, p, warn) {
+  const v = s.sfx ?? s.sound ?? s.effect;
+  if (v === false) return undefined;
+  let name;
+  if (v === true || v === undefined) name = SFX_DEFAULTS[type];
+  else if (typeof v === "string") name = v;
+  else name = v?.name ?? v?.src;
+  if (!name) return undefined;
+  const built = SFX_NAMES.includes(name.toLowerCase());
+  return {
+    src: built ? `sfx/${name.toLowerCase()}.mp3` : name,
+    volume: Math.min(1, Math.max(0, Number(typeof v === "object" ? v.volume : 1) || 1)),
+    at: Math.max(0, Number(typeof v === "object" ? v.at ?? v.delay : 0) || 0),
+    duck: !(typeof v === "object" && v.duck === false),
+    ...(built ? {} : { custom: true }),
+  };
+}
 
 const canon = (s) => String(s ?? "").toLowerCase().replace(/[\s-]/g, "");
 
@@ -238,6 +264,8 @@ function normScene(s, i, warn) {
       break;
     }
   }
+  const sfx = normSfx(s, t, p, warn);
+  if (sfx) o.sfx = sfx;
   return o;
 }
 
@@ -276,10 +304,12 @@ export function normalizeSpec(input) {
     scenes.push(normScene({ type: "hook", headline: "aividlab.shop" }, 0, warn));
   }
 
-  const music = spec.music
-    ? typeof spec.music === "string"
-      ? { src: spec.music, volume: 0.35 }
-      : { src: spec.music.src, volume: Math.min(1, Math.max(0, Number(spec.music.volume ?? 0.35))) }
+  // Default BGM so a video is never silent. `"music": false` = no music.
+  const rawMusic = spec.music === undefined || spec.music === null || spec.music === true ? DEFAULT_MUSIC : spec.music;
+  const music = rawMusic
+    ? typeof rawMusic === "string"
+      ? { src: rawMusic, volume: 0.35 }
+      : { src: rawMusic.src || DEFAULT_MUSIC, volume: Math.min(1, Math.max(0, Number(rawMusic.volume ?? 0.35))) }
     : undefined;
   const voiceover = spec.voiceover
     ? typeof spec.voiceover === "string"
