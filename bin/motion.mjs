@@ -159,7 +159,7 @@ scene types: ${Object.keys(SCENE_TYPES).join(", ")}
   image    {src, headline?, sub?, move?: in|out|left|right}
   cta      {headline, button, url?, sub?}
   ugc      {src:"clip.mp4", captions?: ${CAPTION_STYLES.join("|")}|off, captionPosition?: middle|bottom|top,
-            autoCut?: true, autoZoom?: true, language?: "ms", overlays?: [
+            autoCut?: true, autoZoom?: true, language?: "ms", captionFix?: {"ivylab": "aividlab", "ai ajian": "AI agent"}, overlays?: [
               {type: headline|sticker|lowerThird|stat|cta|broll|progress, at: sec, duration?: sec, text?, sub?, value?, src?, emoji?, position?}]}
 
 explainer overlays for ugc (talking-head tutorial style; presenter auto-blurs behind the big ones):

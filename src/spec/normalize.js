@@ -269,6 +269,9 @@ function normScene(s, i, warn) {
       o.autoZoom = s.autoZoom !== false; // punch-in jump cuts
       o.volume = s.volume == null ? 1 : Math.max(0, Math.min(2, Number(s.volume)));
       o.language = s.language;
+      // Whisper mishears brand/tech words ("ivylab" for aividlab). {"wrong phrase": "right phrase"}, case-insensitive.
+      const fix = s.captionFix ?? s.fix ?? s.corrections;
+      o.captionFix = fix && typeof fix === "object" && !Array.isArray(fix) ? Object.fromEntries(Object.entries(fix).map(([a, b]) => [String(a), String(b)])) : undefined;
       o.overlays = arr(s.overlays).map((ov, j) => normOverlay(ov, `${p}.overlays[${j}]`, warn)).filter(Boolean);
       // Once the cut length is known, squeeze overlays that fall past the clip back inside it
       // (weak models guess `at` from the raw clip; auto-cut makes it shorter).

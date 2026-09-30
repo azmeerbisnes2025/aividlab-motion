@@ -47,5 +47,10 @@ ok(q.every((o) => o.at < L - 0.5 && o.at + o.duration <= L + 1e-6), `all overlay
 ok(q.every((o, i) => i === 0 || q[i - 1].at + q[i - 1].duration <= o.at + 1e-6), "no two overlays overlap after squeeze");
 ok(sq.warnings.some((w) => /squeezed/.test(w)), "squeeze is reported as a warning");
 
+// 6. captionFix passes through as a plain string map
+const cf = ovs([], { captionFix: { ivylab: "aividlab", "ai ajian": "AI agent" } }).spec.scenes[0].captionFix;
+ok(cf && cf.ivylab === "aividlab" && cf["ai ajian"] === "AI agent", "captionFix kept");
+ok(ovs([], { captionFix: ["bad"] }).spec.scenes[0].captionFix === undefined, "captionFix array rejected");
+
 console.log(fails ? `\n${fails} FAILED` : "\nALL PASS");
 process.exit(fails ? 1 : 0);

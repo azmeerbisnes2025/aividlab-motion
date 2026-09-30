@@ -24,6 +24,23 @@ const mapWords = (words: Word[] = [], segs: Seg[]) => {
   return out;
 };
 
+/** Apply {"wrong phrase": "right"} fixes across consecutive words, keeping the first word's timing. */
+const fixWords = (words: Word[], fix?: Record<string, string>) => {
+  if (!fix) return words;
+  const norm = (x: string) => x.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+  const rules = Object.entries(fix).map(([a, b]) => ({ from: a.split(/\s+/).map(norm).filter(Boolean), to: b })).filter((r) => r.from.length);
+  const out: Word[] = [];
+  for (let i = 0; i < words.length; i++) {
+    const hit = rules.find((r) => r.from.every((f, k) => words[i + k] && norm(words[i + k].w) === f));
+    if (!hit) { out.push(words[i]); continue; }
+    const last = words[i + hit.from.length - 1];
+    const tail = (last.w.match(/[.,!?]+$/) || [""])[0];
+    hit.to.split(/\s+/).forEach((w, k, arr) => out.push({ w: k === arr.length - 1 ? w + tail : w, s: words[i].s, e: last.e }));
+    i += hit.from.length - 1;
+  }
+  return out;
+};
+
 /** Group words into short caption pages (TikTok style: 1-4 words). */
 const pages = (words: Word[], maxWords = 3, maxChars = 18) => {
   const res: Word[][] = [];
@@ -195,7 +212,7 @@ export const UGC: React.FC<{ s: S }> = ({ s }) => {
   const frame = useCurrentFrame();
   const { u, width, height } = useLayout();
   const segs: Seg[] = s.segments?.length ? s.segments : [{ from: s.trimStart ?? 0, to: s.trimEnd ?? s.srcDuration ?? s.duration }];
-  const words = React.useMemo(() => mapWords(s.words, segs), [s.words, segs]);
+  const words = React.useMemo(() => fixWords(mapWords(s.words, segs), s.captionFix), [s.words, segs, s.captionFix]);
   const srcAR = s.videoWidth && s.videoHeight ? s.videoWidth / s.videoHeight : width / height;
   const outAR = width / height;
   const mismatch = Math.abs(srcAR - outAR) > 0.15;
