@@ -301,7 +301,9 @@ function normScene(s, i, warn) {
     }
   }
   const sfx = normSfx(s, t, p, warn);
+  const sfxRaw = s.sfx ?? s.sound ?? s.effect;
   if (sfx) o.sfx = sfx;
+  else if (sfxRaw === false) o.sfx = false; // keep the opt-out: the CLI normalises twice
   return o;
 }
 
@@ -326,7 +328,11 @@ function normOverlay(ov, p, warn) {
     images: t === "cards" ? arr(ov.images ?? ov.srcs ?? ov.src).slice(0, 3).map(String) : undefined,
     play: ov.play,
     blur: ov.blur,
-    ...(ov.sfx !== undefined || OVERLAY_SFX[t] ? { sfx: normSfx({ sfx: ov.sfx }, `ov:${t}`, p, warn) } : {}),
+    ...(ov.sfx === false
+      ? { sfx: false } // explicit opt-out must survive the second normalise pass
+      : ov.sfx !== undefined || OVERLAY_SFX[t]
+        ? { sfx: normSfx({ sfx: ov.sfx }, `ov:${t}`, p, warn) }
+        : {}),
   };
 }
 
@@ -347,12 +353,14 @@ export function normalizeSpec(input) {
   }
 
   // Default BGM so a video is never silent. `"music": false` = no music.
+  // Keep `false` (not undefined) when disabled: the CLI normalises TWICE, and
+  // `undefined` is dropped in between, which would re-add the default BGM.
   const rawMusic = spec.music === undefined || spec.music === null || spec.music === true ? DEFAULT_MUSIC : spec.music;
   const music = rawMusic
     ? typeof rawMusic === "string"
       ? { src: rawMusic, volume: 0.35 }
       : { src: rawMusic.src || DEFAULT_MUSIC, volume: Math.min(1, Math.max(0, Number(rawMusic.volume ?? 0.35))) }
-    : undefined;
+    : false;
   const voiceover = spec.voiceover
     ? typeof spec.voiceover === "string"
       ? { src: spec.voiceover, volume: 1 }
