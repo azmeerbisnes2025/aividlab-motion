@@ -17,6 +17,7 @@ Any LLM (Claude, GPT, DeepSeek, Qwen, GLM, Kimi…) writes a **short JSON spec**
 - Music / voiceover tracks, watermark, progress bar
 - **Sound effects**: built-in `whoosh | ding | pop | rumble`; `hook→rumble, stat→ding, price→ding, steps→pop, cta→whoosh` auto-play, any scene can override (`"sfx": "pop"`, or `"sfx": false`), BGM auto-ducks under each hit
 - **Explainer edit** (talking-head tutorial reel): overlays `glitch emphasis number cards flow focus screen split` pop over the presenter; presenter auto-blurs, captions step aside, matching SFX. `motion transcript clip.mp4` gives cut-timeline times so any LLM can place them. Example: `examples/explainer-ugc.json`
+- **Promo / tutorial reel**: 2-3 talking clips back to back + real app screenshots (`split`/`screen`) + short CTA; `captionFix` repairs misheard brand words in captions. Example: `examples/tutorial-promo-multiclip.json`
 - `sheet` command → contact sheet PNG so an agent can visually QA before full render
 
 ## Install (1 command)

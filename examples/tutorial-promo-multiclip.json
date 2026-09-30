@@ -1,0 +1,171 @@
+{
+  "title": "Tutorial/promo reel: 2-3 talking clips + real app screenshots popping over them (the aividlab.shop promo recipe). Replace part-N.mp4 / app-N.png with your own.",
+  "ratio": "9:16",
+  "theme": "aividlab",
+  "transition": "fade",
+  "scenes": [
+    {
+      "type": "ugc",
+      "src": "part-1.mp4",
+      "captions": "boxed",
+      "captionPosition": "bottom",
+      "language": "ms",
+      "autoCut": false,
+      "captionFix": {
+        "kora": "Korang",
+        "promos": "promo"
+      },
+      "overlays": [
+        {
+          "type": "glitch",
+          "text": "TAK RETI EDIT",
+          "sub": "masalah biasa",
+          "at": 0.1,
+          "duration": 1.6
+        },
+        {
+          "type": "emphasis",
+          "text": "Nak mula",
+          "highlight": "dari mana?",
+          "at": 2.1,
+          "duration": 1.6
+        },
+        {
+          "type": "number",
+          "value": "1",
+          "text": "Ada cara senang",
+          "sub": "ramai tak tahu",
+          "at": 3.9,
+          "duration": 1.8
+        },
+        {
+          "type": "split",
+          "src": "app-1.png",
+          "text": "AIVidLab Motion",
+          "at": 5.9,
+          "duration": 2.0
+        },
+        {
+          "type": "screen",
+          "src": "app-2.png",
+          "text": "Cara paling mudah",
+          "at": 8.2,
+          "duration": 1.8
+        }
+      ]
+    },
+    {
+      "type": "ugc",
+      "src": "part-2.mp4",
+      "captions": "boxed",
+      "captionPosition": "bottom",
+      "language": "ms",
+      "autoCut": false,
+      "captionFix": {
+        "message": "mesej"
+      },
+      "overlays": [
+        {
+          "type": "split",
+          "src": "app-2.png",
+          "text": "Guna AI Agent",
+          "at": 0.6,
+          "duration": 2.0
+        },
+        {
+          "type": "screen",
+          "src": "app-3.png",
+          "text": "Anda guna AI agent mana?",
+          "at": 2.6,
+          "duration": 2.2
+        },
+        {
+          "type": "split",
+          "src": "app-4.png",
+          "text": "Salin mesej",
+          "at": 5.0,
+          "duration": 2.0
+        },
+        {
+          "type": "flow",
+          "text": "3 langkah",
+          "items": [
+            "Pilih agent",
+            "Salin mesej",
+            "Dapat video"
+          ],
+          "at": 6.4,
+          "duration": 1.8
+        },
+        {
+          "type": "screen",
+          "src": "app-5.png",
+          "text": "Siap 1080x1920",
+          "at": 8.3,
+          "duration": 1.7
+        }
+      ]
+    },
+    {
+      "type": "ugc",
+      "src": "part-3.mp4",
+      "captions": "boxed",
+      "captionPosition": "bottom",
+      "language": "ms",
+      "autoCut": false,
+      "captionFix": {
+        "kau orang": "Korang",
+        "ajian": "agent",
+        "ivylab .shop": "aividlab.shop"
+      },
+      "overlays": [
+        {
+          "type": "glitch",
+          "text": "AI AGENT",
+          "sub": "buat semua",
+          "at": 0.1,
+          "duration": 1.5
+        },
+        {
+          "type": "screen",
+          "src": "app-1.png",
+          "text": "14 template scene",
+          "at": 2.3,
+          "duration": 2.0
+        },
+        {
+          "type": "emphasis",
+          "text": "Guna AI agent",
+          "highlight": "saja",
+          "at": 4.7,
+          "duration": 1.6
+        },
+        {
+          "type": "flow",
+          "text": "AI buat semua",
+          "items": [
+            "Hook",
+            "Video",
+            "Caption"
+          ],
+          "at": 6.3,
+          "duration": 1.6
+        },
+        {
+          "type": "cta",
+          "text": "Subscribe aividlab.shop",
+          "at": 8.0,
+          "duration": 1.8
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "headline": "Jom subscribe",
+      "button": "aividlab.shop",
+      "url": "aividlab.shop",
+      "sub": "Video motion graphic & UGC",
+      "duration": 1.8
+    }
+  ]
+}

@@ -71,6 +71,12 @@ Setiap overlay ada "at" (saat dari transkrip) dan "duration" (1.5-3). Teks pende
 Balas JSON sahaja.
 ```
 
+### Video promo / tutorial (anda bercakap dari mula sampai habis + tunjuk app anda)
+1. Rakam 2-3 klip pendek (pembuka → tunjuk sistem → ajak subscribe/beli). Ambil screenshot app/website anda.
+2. `motion transcript` setiap klip.
+3. Minta AI ikut contoh `examples/tutorial-promo-multiclip.json`: guna `split` & `screen` dengan screenshot anda banyak kali, akhiri dengan scene `cta` pendek.
+4. Caption salah eja jenama? Tambah `"captionFix": {"salah":"betul"}` dalam scene ugc.
+
 ### Tips
 - AI bagi teks panjang? Tak apa, engine potong & betulkan sendiri.
 - Tak puas hati? Balas AI: *"buat lebih punchy, tukar theme sunset"*.
