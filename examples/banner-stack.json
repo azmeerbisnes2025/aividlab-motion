@@ -1,0 +1,64 @@
+{
+  "title": "Banner-stack UGC — power banners + topic pill over a talking head (Malaysian reel style). Replace clip.mp4 with your own.",
+  "ratio": "9:16",
+  "theme": "aividlab",
+  "transition": "zoom",
+  "scenes": [
+    {
+      "type": "ugc",
+      "src": "clip.mp4",
+      "captions": "pop",
+      "captionPosition": "bottom",
+      "language": "ms",
+      "overlays": [
+        {
+          "type": "kicker",
+          "text": "TIPS EDIT VIDEO",
+          "emoji": "🚀",
+          "tone": "lime",
+          "position": "top-left",
+          "at": 0.2,
+          "duration": 5
+        },
+        {
+          "type": "banner",
+          "text": "MALAS NAK EDIT VIDEO?",
+          "tone": "yellow",
+          "position": "center",
+          "at": 0.6,
+          "duration": 2.4
+        },
+        {
+          "type": "banner",
+          "text": "MAKAN 1 SAMPAI 3 JAM?",
+          "tone": "red",
+          "position": "center",
+          "at": 3.2,
+          "duration": 2.4
+        },
+        {
+          "type": "banner",
+          "text": "3 PERKARA\nKENA TAHU",
+          "tone": "black",
+          "position": "center",
+          "at": 5.8,
+          "duration": 2.6
+        },
+        {
+          "type": "banner",
+          "text": "#1 JANGAN TINGGALKAN\nSOLAT SUNAT TARAWIH",
+          "tone": "pink",
+          "position": "center",
+          "at": 8.6,
+          "duration": 2.8
+        }
+      ]
+    },
+    {
+      "type": "cta",
+      "headline": "Cuba sekarang",
+      "button": "Cuba Percuma",
+      "sub": "aividlab.shop"
+    }
+  ]
+}

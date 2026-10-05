@@ -67,6 +67,10 @@ Setiap 2-3 saat letak SATU overlay ikut apa aku cakap masa tu. Jenis overlay:
   focus    {src:"produk.png", text, sub?}             - tunjuk produk
   screen   {src:"screenshot.png", text}               - tunjuk app / website
   split    {src:"demo.mp4 atau gambar.png", text}      - contoh hasil atas, aku bawah
+  banner   {text:"MAKAN 1 SAMPAI 3 JAM?", tone?}       - banner tebal atas kotak warna (gaya reel Malaysia)
+           tone: lime|yellow|orange|pink|red|violet|cyan|black|white (default yellow)
+           teks panjang auto-ubah baris; "A\nB" untuk baris sendiri; tight:true = baris lebih panjang
+  kicker   {text:"TIPS RAMADAN", emoji?, tone?}         - pill topik di sudut atas
 Setiap overlay ada "at" (saat dari transkrip) dan "duration" (1.5-3). Teks pendek, max 4 perkataan.
 Balas JSON sahaja.
 ```

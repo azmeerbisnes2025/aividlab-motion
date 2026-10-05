@@ -14,6 +14,8 @@ export const THEME_LIST = ["aividlab", "midnight", "sunset", "luxe", "candy", "m
 export const TRANSITIONS = ["fade", "slide", "wipe", "zoom", "none"];
 export const DEFAULT_MUSIC = "bgm/default.mp3"; // public/bgm — instrumental, generated for aividlab (Mureka BGM)
 export const CAPTION_STYLES = ["pop", "karaoke", "boxed", "minimal"];
+// Banner / kicker colour tokens. The LLM never writes raw hex.
+export const TONE_NAMES = ["lime", "yellow", "orange", "pink", "red", "violet", "cyan", "black", "white"];
 
 // Built-in SFX (public/sfx, synthesized by py/make_sfx.py — no external assets).
 export const SFX_NAMES = ["whoosh", "ding", "pop", "rumble"];
@@ -21,7 +23,8 @@ export const SFX_NAMES = ["whoosh", "ding", "pop", "rumble"];
 export const SFX_DEFAULTS = { hook: "rumble", stat: "ding", price: "ding", steps: "pop", cta: "whoosh",
   // overlays on UGC clips (key "ov:<type>")
   "ov:glitch": "rumble", "ov:emphasis": "pop", "ov:number": "pop", "ov:cards": "whoosh", "ov:flow": "pop",
-  "ov:focus": "ding", "ov:screen": "whoosh", "ov:split": "whoosh", "ov:sticker": "pop", "ov:stat": "ding" };
+  "ov:focus": "ding", "ov:screen": "whoosh", "ov:split": "whoosh", "ov:sticker": "pop", "ov:stat": "ding",
+  "ov:banner": "pop", "ov:kicker": "pop" };
 const OVERLAY_SFX = Object.fromEntries(Object.entries(SFX_DEFAULTS).filter(([k]) => k.startsWith("ov:")).map(([k, v]) => [k.slice(3), v]));
 
 // scene type -> { aliases, defaults(duration s), textLimits }
@@ -59,6 +62,9 @@ const OVERLAY_TYPES = {
   focus: ["productfocus", "spotlight", "frame", "brackets"],
   screen: ["phone", "mockup", "phonemockup", "screenshot", "app", "ui", "appscreen"],
   split: ["splitscreen", "split_screen", "tophalf", "demo"],
+  // power-banner stack + topic pill (ref: Malaysian talking-head reels)
+  banner: ["powerbanner", "power_banner", "bannerstack", "textbanner", "calloutbanner"],
+  kicker: ["topic", "topicpill", "tagline", "eyebrow", "chapter"],
 };
 
 const LIMITS = { headline: 60, line: 42, sub: 90, item: 48, quote: 180 };
@@ -328,6 +334,8 @@ function normOverlay(ov, p, warn) {
     images: t === "cards" ? arr(ov.images ?? ov.srcs ?? ov.src).slice(0, 3).map(String) : undefined,
     play: ov.play,
     blur: ov.blur,
+    tight: ov.tight === true,
+    tone: TONE_NAMES.includes(canon(ov.tone)) ? canon(ov.tone) : undefined,
     ...(ov.sfx === false
       ? { sfx: false } // explicit opt-out must survive the second normalise pass
       : ov.sfx !== undefined || OVERLAY_SFX[t]

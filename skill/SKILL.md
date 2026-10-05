@@ -33,7 +33,7 @@ One-shot UGC: `motion ugc clip.mp4 --headline "Hook" --sticker "HOT" --cta "Cuba
 
 Explainer edit (presenter talking + motion graphics over them, the viral tutorial-reel style):
 1. `motion transcript clip.mp4 --lang ms` → lines with times on the CUT timeline.
-2. One `ugc` scene with `captions:"boxed"`, and one overlay per ~2 s line, matched to what is said: `glitch` (hook word), `emphasis` (text + `highlight` box), `number` (point 1/2/3), `cards` (1-3 images), `flow` (Hook→Proof→USP), `focus` (product), `screen` (phone screenshot), `split` (demo media top half). Fields: `motion schema`; full example `examples/explainer-ugc.json`.
+2. One `ugc` scene with `captions:"boxed"`, and one overlay per ~2 s line, matched to what is said: `glitch` (hook word), `emphasis` (text + `highlight` box), `number` (point 1/2/3), `cards` (1-3 images), `flow` (Hook→Proof→USP), `focus` (product), `screen` (phone screenshot), `split` (demo media top half), `banner` (stacked power banners over the presenter's chest — Malaysian reel style, `tone: lime|yellow|orange|pink|red|violet|cyan|black|white`), `kicker` (topic pill pinned to a top corner, with `emoji`). Fields: `motion schema`; full examples `examples/explainer-ugc.json` + `examples/banner-stack.json`.
 3. Engine blurs the presenter behind big overlays, hides captions under text overlays, plays a matching SFX, and squeezes overlays that run past the clip (warning).
 4. Read the transcript for misheard brand words and add `"captionFix": {"ivylab":"aividlab","ai ajian":"AI agent"}` to the ugc scene.
 5. Promo/tutorial reel across several talking clips + real app screenshots (`split`/`screen`) + 1.5-2 s `cta` end: copy `examples/tutorial-promo-multiclip.json`.

@@ -217,6 +217,125 @@ export const Screen: React.FC<{ o: S }> = ({ o }) => {
   );
 };
 
+/* BANNER: stacked power banners over the presenter (ref: "MALAS NAK EDIT VIDEO?",
+   "3 PERKARA", "JANGAN TINGGALKAN SOLAT SUNAT TARAWIH"). Solid colour box, bold
+   condensed text, hard offset shadow, slight alternating rotation. */
+export const TONES: Record<string, { bg: string; fg: string }> = {
+  lime: { bg: "#b6f02b", fg: "#0c0d10" },
+  yellow: { bg: "#ffd21f", fg: "#141414" },
+  orange: { bg: "#ff7a1a", fg: "#2a0e00" },
+  pink: { bg: "#ff3d9a", fg: "#ffffff" },
+  red: { bg: "#ff2d55", fg: "#ffffff" },
+  violet: { bg: "#8b7cff", fg: "#0c0d10" },
+  cyan: { bg: "#37e0d0", fg: "#06211f" },
+  black: { bg: "#101216", fg: "#ffffff" },
+  white: { bg: "#ffffff", fg: "#101216" },
+};
+export const TONE_NAMES = Object.keys(TONES);
+export const toneOf = (name?: string) => TONES[TONE_NAMES.includes(name ?? "") ? name as string : "yellow"];
+
+const wrapLines = (text: string, max = 16, cap = 4) => {
+  const flat = String(text ?? "").trim();
+  if (!flat) return [];
+  const explicit = flat.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (explicit.length > 1) return explicit.slice(0, cap);
+  const words = flat.split(/\s+/);
+  const out: string[] = [];
+  let cur = "";
+  for (const w of words) {
+    if (`${cur} ${w}`.trim().length > max && cur) {
+      out.push(cur.trim());
+      cur = w;
+      if (out.length === cap - 1) break;
+    } else cur = `${cur} ${w}`.trim();
+  }
+  if (cur) out.push(cur.trim());
+  return out.slice(0, cap);
+};
+
+export const Banner: React.FC<{ o: S }> = ({ o }) => {
+  const t = useTheme();
+  const { u, height, pad } = useLayout();
+  const { vis, frame, fps } = useVis();
+  const tone = toneOf(o.tone);
+  const lines = wrapLines(String(o.text ?? ""), o.tight ? 22 : 16);
+  if (!lines.length) return null;
+  const top = height * (o.position === "top" ? 0.16 : o.position === "bottom" ? 0.66 : 0.42);
+  return (
+    <div style={{ position: "absolute", left: pad * 0.4, right: pad * 0.4, top, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 * u, opacity: vis > 0.02 ? 1 : 0 }}>
+      {lines.map((ln, i) => {
+        const p = spring({ frame: frame - i * 5, fps, config: { damping: 11, stiffness: 200, mass: 0.7 } });
+        const rot = [-2.6, 1.9, -1.3, 0.9][i] ?? 0;
+        const dark = tone.bg === "#101216";
+        return (
+          <div
+            key={i}
+            style={{
+              background: tone.bg,
+              color: tone.fg,
+              fontFamily: t.impact,
+              fontSize: fitSize(ln.toUpperCase(), 92 * u, 0.62),
+              lineHeight: 1.04,
+              letterSpacing: "0.01em",
+              textTransform: "uppercase",
+              padding: `${10 * u}px ${26 * u}px`,
+              borderRadius: 12 * u,
+              transform: `translateY(${(1 - p) * -70 * u}px) scale(${0.5 + 0.5 * p}) rotate(${rot + (1 - p) * -6}deg)`,
+              opacity: Math.min(1, p * 1.6),
+              boxShadow: `${7 * u}px ${7 * u}px 0 ${dark ? "rgba(255,255,255,.18)" : "rgba(0,0,0,.9)"}, 0 ${16 * u}px ${36 * u}px rgba(0,0,0,.5)`,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {ln}
+          </div>
+        );
+      })}
+      {o.sub && (
+        <div style={{ marginTop: 6 * u, fontFamily: t.body, fontWeight: 800, fontSize: 40 * u, color: "#fff", textShadow: shadow(u), textTransform: "uppercase", letterSpacing: "0.04em", opacity: vis }}>
+          {o.sub}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* KICKER: topic pill pinned to a top corner (ref: "🌙 TIPS RAMADAN", "05/05"). */
+export const Kicker: React.FC<{ o: S }> = ({ o }) => {
+  const t = useTheme();
+  const { u, height, pad } = useLayout();
+  const { vis, frame } = useVis();
+  const tone = toneOf(o.tone);
+  const label = String(o.text ?? "").trim();
+  if (!label) return null;
+  const right = String(o.position ?? "top-left").endsWith("right");
+  return (
+    <div style={{ position: "absolute", top: height * 0.075, [right ? "right" : "left"]: pad * 0.5, transform: `translateY(${(1 - vis) * -50 * u}px)`, opacity: vis }}>
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 12 * u,
+          background: tone.bg,
+          color: tone.fg,
+          fontFamily: t.body,
+          fontWeight: 900,
+          fontSize: 40 * u,
+          letterSpacing: "0.03em",
+          textTransform: "uppercase",
+          padding: `${12 * u}px ${28 * u}px`,
+          borderRadius: 999,
+          transform: `rotate(-2deg) translateX(${Math.sin(frame / 14) * 4 * u}px)`,
+          boxShadow: `${5 * u}px ${5 * u}px 0 rgba(0,0,0,.85), 0 ${12 * u}px ${30 * u}px rgba(0,0,0,.45)`,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {o.emoji ? <span style={{ fontSize: "1.15em" }}>{String(o.emoji).slice(0, 4)}</span> : null}
+        {label}
+      </div>
+    </div>
+  );
+};
+
 /* SPLIT: media on the top half; the presenter is pushed to the bottom half by UGC.tsx */
 export const SplitTop: React.FC<{ o: S }> = ({ o }) => {
   const t = useTheme();

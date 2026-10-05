@@ -2,7 +2,7 @@ import React from "react";
 import { AbsoluteFill, Audio, OffthreadVideo, Sequence, interpolate, spring, useCurrentFrame, useVideoConfig, Img } from "remotion";
 import { useLayout, useTheme, Pill, EASE } from "../lib/kit";
 import { asset } from "../scenes";
-import { Cards, Emphasis, Flow, Focus, Glitch, NumberPoint, Screen, SplitTop } from "./fx";
+import { Banner, Cards, Emphasis, Flow, Focus, Glitch, Kicker, NumberPoint, Screen, SplitTop } from "./fx";
 
 // Overlays that take over the frame: the presenter behind them is blurred + dimmed.
 const BLUR_TYPES = ["glitch", "cards", "flow", "focus", "screen"];
@@ -197,6 +197,10 @@ const Overlay: React.FC<{ o: S }> = ({ o }) => {
       return <Focus o={o} />;
     case "screen":
       return <Screen o={o} />;
+    case "banner":
+      return <Banner o={o} />;
+    case "kicker":
+      return <Kicker o={o} />;
     case "split":
       return <SplitTop o={o} />;
     case "progress":
@@ -224,7 +228,7 @@ export const UGC: React.FC<{ s: S }> = ({ s }) => {
   const blurK = overlays.filter((o) => BLUR_TYPES.includes(o.type) && o.blur !== false).reduce((m, o) => Math.max(m, ramp(o)), 0);
   const splitK = overlays.filter((o) => o.type === "split").reduce((m, o) => Math.max(m, ramp(o)), 0);
   // captions step aside while a text-heavy overlay owns the screen
-  const capsOff = overlays.filter((o) => [...BLUR_TYPES, "emphasis", "number"].includes(o.type)).reduce((m, o) => Math.max(m, ramp(o)), 0);
+  const capsOff = overlays.filter((o) => [...BLUR_TYPES, "emphasis", "number", "banner"].includes(o.type)).reduce((m, o) => Math.max(m, ramp(o)), 0);
   const presenter: React.CSSProperties = {
     filter: blurK > 0 ? `blur(${blurK * 28 * u}px) brightness(${1 - blurK * 0.45})` : undefined,
     transform: splitK > 0 ? `translateY(${splitK * height * 0.25}px)` : undefined,

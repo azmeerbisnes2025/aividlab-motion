@@ -52,5 +52,28 @@ const cf = ovs([], { captionFix: { ivylab: "aividlab", "ai ajian": "AI agent" } 
 ok(cf && cf.ivylab === "aividlab" && cf["ai ajian"] === "AI agent", "captionFix kept");
 ok(ovs([], { captionFix: ["bad"] }).spec.scenes[0].captionFix === undefined, "captionFix array rejected");
 
-console.log(fails ? `\n${fails} FAILED` : "\nALL PASS");
+// 7. banner / kicker resolve (incl. aliases) and carry tone + tight
+const r7 = ovs([
+  { type: "banner", text: "MAKAN 1 SAMPAI 3 JAM?", tone: "red", tight: true, at: 0 },
+  { type: "power banner", text: "x", at: 2 },
+  { type: "kicker", text: "TIPS RAMADAN", emoji: "🌙", tone: "yellow", position: "top-right", at: 0.3 },
+  { type: "topic", text: "y", at: 1 },
+]);
+const t7 = r7.spec.scenes[0].overlays;
+ok(t7[0].type === "banner", `banner resolves (got ${t7[0].type})`);
+ok(t7[1].type === "banner", `alias "power banner" -> banner (got ${t7[1].type})`);
+ok(t7[2].type === "kicker", `kicker resolves (got ${t7[2].type})`);
+ok(t7[3].type === "kicker", `alias "topic" -> kicker (got ${t7[3].type})`);
+ok(t7[0].tone === "red", `banner.tone kept (got ${t7[0].tone})`);
+ok(t7[0].tight === true, "banner.tight kept");
+ok(t7[0].sfx?.src === "sfx/pop.mp3", `banner default sfx pop (got ${t7[0].sfx?.src})`);
+ok(t7[2].sfx?.src === "sfx/pop.mp3", `kicker default sfx pop (got ${t7[2].sfx?.src})`);
+ok(t7[0].text === "MAKAN 1 SAMPAI 3 JAM?", "banner text kept verbatim");
+ok(ovs([{ type: "banner", text: "x", tone: "#ff0000", at: 0 }]).spec.scenes[0].overlays[0].tone === undefined, "raw hex tone rejected (locked palette)");
+ok(ovs([{ type: "banner", text: "x", tone: "mauve", at: 0 }]).spec.scenes[0].overlays[0].tone === undefined, "unknown tone name rejected");
+// idempotent: re-normalise keeps tone
+const again7 = normalizeSpec(r7.spec).spec.scenes[0].overlays;
+ok(again7[0].tone === "red" && again7[0].tight === true, "re-normalise keeps tone + tight");
+
+console.log(fails ? `\\n${fails} FAILED` : "\\nALL PASS");
 process.exit(fails ? 1 : 0);

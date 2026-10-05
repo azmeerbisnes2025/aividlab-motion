@@ -171,7 +171,11 @@ explainer overlays for ugc (talking-head tutorial style; presenter auto-blurs be
   focus    {src:"product.png", text?, sub?}           product in white card + corner brackets
   screen   {src:"screenshot.png", text?}              phone mockup (tall screenshot auto-scrolls)
   split    {src:"demo.mp4"|"img.png", text?}          media on top half, presenter pushed to bottom half
-  all take position?: top|center|bottom, sfx? (defaults: glitch rumble, cards/screen/split whoosh, focus ding, others pop)
+  banner   {text:"MAKAN 1 SAMPAI 3 JAM?", tone?, tight?, sub?}  stacked power banners over presenter (ref: Malaysian reels)
+           tone?: lime|yellow|orange|pink|red|violet|cyan|black|white  (default yellow). Multi-line: "A\\nB" or auto-wrap.
+           tight?: true = longer lines per banner. Position: top|center|bottom.
+  kicker   {text:"TIPS RAMADAN", emoji?, tone?}        topic pill pinned to a top corner. position?: top-left|top-right
+  all take position?: top|center|bottom, sfx? (defaults: glitch rumble, cards/screen/split whoosh, focus ding, banner/kicker pop, others pop)
   Timing: 1 overlay every 1.5-2.5 s. Overlays past the auto-cut clip length are squeezed in (warning) — for long lists split into 2 ugc scenes.
 
 sound effects (sfx): every scene may add a sound, layered on top of the music.
